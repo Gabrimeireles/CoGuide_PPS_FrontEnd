@@ -1,45 +1,34 @@
-import React from "react";
-import {
-    Card,
-    Input,
-    Textarea,
-    Button,
-    Typography,
-} from "@material-tailwind/react";
-
+﻿
 export function Contact() {
-    return (
-        <div className="flex justify-center h-screen pt-5">
-            <Card color="transparent" shadow={false}>
-                <Typography variant="h4" color="blue-gray">
-                    Contato
-                </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
-                    Preencha o formulário para entrar em contato.
-                </Typography>
-                <form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-                    <div className="mb-1 flex flex-col gap-6">
-                        <Typography variant="h6" color="blue-gray" className="-mb-3">
-                            Nome Completo
-                        </Typography>
-                        <Input size="lg" placeholder="Seu Nome" className=" !border-t-blue-gray-200 focus:!border-t-gray-900" labelProps={{ className: "before:content-none after:content-none" }} />
+  return (
+    <section className="mx-auto w-full max-w-2xl">
+      <div className="panel p-8 md:p-10">
+        <h1 className="section-title">Fale com o time CoGuide</h1>
+        <p className="section-subtitle mt-3">
+          Compartilhe seu cenário de suporte eSocial para desenharmos juntos a melhor estratégia de implantação do copiloto.
+        </p>
 
-                        <Typography variant="h6" color="blue-gray" className="-mb-3">
-                            Seu Email
-                        </Typography>
-                        <Input size="lg" placeholder="email@exemplo.com" className=" !border-t-blue-gray-200 focus:!border-t-gray-900" labelProps={{ className: "before:content-none after:content-none" }} />
+        <form className="mt-8 grid gap-4" onSubmit={(event) => event.preventDefault()}>
+          <label className="grid gap-2 text-sm font-semibold">
+            Nome completo
+            <input type="text" className="field" placeholder="Seu nome" />
+          </label>
 
-                        <Typography variant="h6" color="blue-gray" className="-mb-3">
-                            Mensagem
-                        </Typography>
-                        <Textarea rows={4} placeholder="Sua mensagem..." className=" !border-t-blue-gray-200 focus:!border-t-gray-900" labelProps={{ className: "before:content-none after:content-none" }} />
-                    </div>
+          <label className="grid gap-2 text-sm font-semibold">
+            E-mail corporativo
+            <input type="email" className="field" placeholder="nome@empresa.com" />
+          </label>
 
-                    <Button className="mt-6" fullWidth>
-                        Enviar Mensagem
-                    </Button>
-                </form>
-            </Card>
-        </div>
-    );
-};
+          <label className="grid gap-2 text-sm font-semibold">
+            Mensagem
+            <textarea rows={5} className="field" placeholder="Ex.: time de 25 agentes, alto volume de dúvidas em S-1200 e fechamento mensal" />
+          </label>
+
+          <button type="submit" className="btn-primary mt-2 w-full sm:w-fit">
+            Enviar mensagem
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
