@@ -1,28 +1,26 @@
-﻿import { useEffect, useState } from 'react';
+﻿/* eslint-disable react/prop-types */
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClockIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ClockIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import brand from '/src/assets/brand.png';
 import { ThemeToggle } from '/src/components/ThemeToggle';
 
-export function Sidebar() {
-  const [historic, setHistoric] = useState([]);
+function getChatId(chat) {
+  return chat?.id || chat?._id || null;
+}
 
+export function Sidebar({
+  chats,
+  activeChatId,
+  isLoading,
+  errorMessage,
+  onSelectChat,
+  onCreateChat,
+  onRefreshChats,
+}) {
   useEffect(() => {
-    const getHistoric = async () => {
-      try {
-        const response = await fetch('/api/chats');
-        const historicData = await response.json();
-
-        if (response.ok && Array.isArray(historicData)) {
-          setHistoric(historicData);
-        }
-      } catch (_error) {
-        setHistoric([]);
-      }
-    };
-
-    getHistoric();
-  }, []);
+    onRefreshChats();
+  }, [onRefreshChats]);
 
   return (
     <aside className="panel flex h-[calc(100vh-2rem)] flex-col p-5">
@@ -37,31 +35,53 @@ export function Sidebar() {
         <ThemeToggle />
       </div>
 
-      <button type="button" className="btn-primary mb-5 w-full justify-center">
-        <PlusCircleIcon className="h-5 w-5" />
-        Novo atendimento
-      </button>
+      <div className="mb-3 flex gap-2">
+        <button type="button" className="btn-primary w-full justify-center" onClick={onCreateChat}>
+          <PlusCircleIcon className="h-5 w-5" />
+          Novo atendimento
+        </button>
+        <button type="button" className="btn-secondary px-3" onClick={onRefreshChats} aria-label="Atualizar histórico" title="Atualizar histórico">
+          <ArrowPathIcon className={`h-5 w-5 ${isLoading ? 'animate-spin' : ''}`} />
+        </button>
+      </div>
 
       <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em]" style={{ color: 'var(--text-muted)' }}>
         <ClockIcon className="h-4 w-4" />
         Conversas recentes
       </div>
 
+      {errorMessage && (
+        <p className="mb-3 rounded-xl border px-3 py-2 text-xs" style={{ borderColor: 'var(--line)', color: '#dc2626', backgroundColor: 'color-mix(in srgb, #dc2626 8%, var(--surface))' }}>
+          {errorMessage}
+        </p>
+      )}
+
       <div className="flex-1 space-y-2 overflow-y-auto pr-1">
-        {historic.length > 0 ? (
-          historic.map((chat) => (
-            <button
-              key={chat.id}
-              type="button"
-              className="w-full rounded-xl border p-3 text-left text-sm font-medium transition hover:opacity-90"
-              style={{ borderColor: 'var(--line)', backgroundColor: 'var(--surface)' }}
-            >
-              {chat.name}
-            </button>
-          ))
+        {chats.length > 0 ? (
+          chats.map((chat) => {
+            const chatId = getChatId(chat);
+            const isActive = activeChatId && chatId === activeChatId;
+
+            return (
+              <button
+                key={chatId}
+                type="button"
+                onClick={() => onSelectChat(chatId)}
+                className="w-full rounded-xl border p-3 text-left text-sm font-medium transition hover:opacity-90"
+                style={{
+                  borderColor: isActive ? 'var(--primary)' : 'var(--line)',
+                  backgroundColor: isActive
+                    ? 'color-mix(in srgb, var(--primary) 14%, var(--surface))'
+                    : 'var(--surface)',
+                }}
+              >
+                {chat.title || 'Atendimento sem título'}
+              </button>
+            );
+          })
         ) : (
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-            Nenhum histórico encontrado.
+            {isLoading ? 'Carregando histórico...' : 'Nenhum histórico encontrado.'}
           </p>
         )}
       </div>

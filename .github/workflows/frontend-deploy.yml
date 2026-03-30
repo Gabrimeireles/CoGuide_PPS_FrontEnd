@@ -1,0 +1,43 @@
+﻿name: Frontend - Deploy to Homologation
+
+on:
+  workflow_run:
+    workflows: ["Frontend - Build & Push"]
+    types: [completed]
+    branches: [homologation]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: v0.1.0
+        required: true
+      skip_health_check:
+        description: Skip health check
+        required: false
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: frontend-deploy-homologation
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    uses: Gabrimeireles/reusable-workflows/.github/workflows/docker-deploy-ssh.yml@v1.7
+    with:
+      deploy_environment: homologation
+      deploy_path: ${{ vars.DEPLOY_PATH_FRONTEND }}
+      service_name: web
+      compose_file: deploy/docker-compose.yml
+      compose_env_file: .env
+      runtime_env_filename: .env.frontend
+      api_image: ghcr.io/gabrimeireles/coguide-frontend
+      api_tag: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.event.inputs.image_tag }}
+      health_url: ${{ vars.FRONTEND_HEALTH_URL }}
+      health_retries: 10
+      health_interval: 30
+      skip_health_check: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.skip_health_check == 'true' || false }}
+      use_tailscale: true
+    secrets: inherit

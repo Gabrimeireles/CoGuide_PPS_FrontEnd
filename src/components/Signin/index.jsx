@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import brand from '/src/assets/brand.png';
@@ -22,12 +22,12 @@ export function Signin() {
         showConfirmButton: false,
         timer: 1400,
       });
-      navigate('/');
-    } catch (_error) {
+      navigate('/chat');
+    } catch (error) {
       Swal.fire({
         icon: 'error',
         title: 'Falha ao fazer login',
-        text: 'Verifique seu e-mail e senha e tente novamente.',
+        text: error.message || 'Verifique seu e-mail e senha e tente novamente.',
       });
     }
   };
