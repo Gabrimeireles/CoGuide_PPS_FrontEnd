@@ -2,7 +2,7 @@
 
 on:
   workflow_run:
-    workflows: ["Frontend - Build & Push"]
+    workflows: ["Frontend - Create Release"]
     types: [completed]
     branches: [homologation]
   workflow_dispatch:
