@@ -28,7 +28,7 @@ jobs:
     uses: Gabrimeireles/reusable-workflows/.github/workflows/docker-deploy-ssh.yml@v1.7
     with:
       deploy_environment: homologation
-      deploy_path: ${{ vars.DEPLOY_PATH_FRONTEND }}
+      deploy_path: ${{ vars.DEPLOY_PATH }}
       service_name: web
       compose_file: deploy/docker-compose.yml
       compose_env_file: .env
