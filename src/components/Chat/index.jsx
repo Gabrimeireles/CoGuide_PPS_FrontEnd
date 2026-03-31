@@ -1,104 +1,82 @@
-import React, { useState } from 'react';
-import {
-  Card,
-  List,
-  ListItem,
-  Avatar,
-  Textarea,
-  Button,
-  Typography,
-} from "@material-tailwind/react";
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+﻿import { useState } from 'react';
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 
-const messages = [
+const initialMessages = [
   {
-    author: "John Doe",
-    avatar: "https://source.unsplash.com/random/1",
-    message: "Hi! How can I help you today?",
+    author: 'CoGuide',
+    message: 'Olá! Posso ajudar com dúvidas de eSocial, erros de eventos e orientação de resposta ao cliente.',
   },
   {
-    author: "You",
-    avatar: "https://source.unsplash.com/random/2",
-    message: "I'm having trouble setting up my new email.",
+    author: 'Você',
+    message: 'Recebi erro no envio do S-1200 após fechamento. Qual roteiro de atendimento devo seguir?',
   },
   {
-    author: "John Doe",
-    avatar: "https://source.unsplash.com/random/1",
-    message:
-      "I understand. Can you tell me which email you're configuring and what problem you're encountering?",
-  },
-  {
-    author: "John Doe",
-    avatar: "https://source.unsplash.com/random/1",
-    message:
-      "I understand. Can you tell me which email you're configuring and what problem you're encountering?",
-  },
-  {
-    author: "John Doe",
-    avatar: "https://source.unsplash.com/random/1",
-    message:
-      "I understand. Can you tell me which email you're configuring and what problem you're encountering?",
-  },
-  {
-    author: "John Doe",
-    avatar: "https://source.unsplash.com/random/1",
-    message:
-      "I understand. Can you tell me which email you're configuring and what problem you're encountering?",
-  },
-  {
-    author: "John Doe",
-    avatar: "https://source.unsplash.com/random/1",
-    message:
-      "I understand. Can you tell me which email you're configuring and what problem you're encountering?",
+    author: 'CoGuide',
+    message: 'Sugestão inicial: validar competência, checar pré-requisitos do S-1299, confirmar vínculo e revisar retorno do processamento para orientar correção com prazo.',
   },
 ];
 
 export function Chat() {
-  const [messageText, setMessageText] = useState("");
+  const [messages, setMessages] = useState(initialMessages);
+  const [messageText, setMessageText] = useState('');
 
   const handleSendMessage = () => {
-    // TODO: Enviar a mensagem para o servidor
-    console.log("Enviando mensagem:", messageText);
+    const content = messageText.trim();
 
-    // Limpar o campo de texto após o envio
-    setMessageText("");
+    if (!content) {
+      return;
+    }
+
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      {
+        author: 'Você',
+        message: content,
+      },
+    ]);
+
+    setMessageText('');
   };
 
   return (
-    <Card className="h-[calc(100vh-2rem)] w-[calc(170vh-2rem)] flex flex-col p-4 shadow-xl shadow-blue-gray-900/5 ml-2">
-      <List className="flex-grow overflow-y-auto">
+    <section className="panel flex h-[calc(100vh-2rem)] flex-col p-5">
+      <header className="mb-4 border-b pb-4" style={{ borderColor: 'var(--line)' }}>
+        <h1 className="text-xl font-bold">Copiloto de Suporte eSocial</h1>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+          Conversas orientadas por contexto para reduzir tempo de resolução e aumentar consistência técnica.
+        </p>
+      </header>
+
+      <div className="flex-1 space-y-3 overflow-y-auto pr-1">
         {messages.map((message, index) => (
-          <React.Fragment key={index}>
-            <ListItem className={message.author === "Você" ? "text-right" : ""}>
-              <Avatar
-                src={message.avatar}
-                alt={message.author}
-                className="mr-2"
-              />
-              <div>
-                <Typography variant="h5" color="blue-gray">
-                  {message.author}
-                </Typography>
-                <Typography>
-                  {message.message}
-                </Typography>
-              </div>
-            </ListItem>
-          </React.Fragment>
+          <article
+            key={`${message.author}-${index}`}
+            className={`max-w-[85%] rounded-2xl border p-4 text-sm leading-7 ${message.author === 'Você' ? 'ml-auto' : ''}`}
+            style={{
+              borderColor: 'var(--line)',
+              backgroundColor: message.author === 'Você' ? 'color-mix(in srgb, var(--primary) 14%, var(--surface))' : 'var(--surface)',
+            }}
+          >
+            <p className="mb-1 text-xs font-bold uppercase tracking-[0.1em]" style={{ color: 'var(--text-muted)' }}>
+              {message.author}
+            </p>
+            <p>{message.message}</p>
+          </article>
         ))}
-      </List>
-      <div className="flex items-center justify-end p-2">
-        <Textarea
-          variant="outlined"
-          value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
-          label="Digite sua mensagem"
-          className="w-full mr-2"
-        />
-        <Button variant="gradient" size="sm" onClick={handleSendMessage}>
-          <PaperAirplaneIcon className="h-4 w-4" />
-        </Button>
       </div>
-    </Card>
+
+      <div className="mt-4 flex items-end gap-3">
+        <textarea
+          rows={2}
+          value={messageText}
+          onChange={(event) => setMessageText(event.target.value)}
+          placeholder="Digite a dúvida do atendimento"
+          className="field min-h-[60px] resize-none"
+        />
+        <button type="button" onClick={handleSendMessage} className="btn-primary h-[46px] w-[46px] rounded-xl p-0" aria-label="Enviar mensagem">
+          <PaperAirplaneIcon className="h-4 w-4" />
+        </button>
+      </div>
+    </section>
   );
 }

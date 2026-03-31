@@ -1,67 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import brandDark from '/src/assets/brand.png';
-
-import {
-  Card,
-  Typography,
-  List,
-  ListItem,
-  ListItemPrefix,
-} from "@material-tailwind/react";
-
-import { PlusCircleIcon } from "@heroicons/react/24/solid";
+﻿import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ClockIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import brand from '/src/assets/brand.png';
+import { ThemeToggle } from '/src/components/ThemeToggle';
 
 export function Sidebar() {
-  const getHistoric = async () => {
-    const response = await fetch('/api/chats');
-    const historicData = await response.json();
-
-    if (!response.ok) {
-      console.error('Erro ao recuperar histórico de chats:', response.statusText);
-      return [];
-    }
-
-    return historicData;
-  };
-
   const [historic, setHistoric] = useState([]);
 
   useEffect(() => {
-    const fetchHistoric = async () => {
-      const historicData = await getHistoric();
-      setHistoric(historicData);
+    const getHistoric = async () => {
+      try {
+        const response = await fetch('/api/chats');
+        const historicData = await response.json();
+
+        if (response.ok && Array.isArray(historicData)) {
+          setHistoric(historicData);
+        }
+      } catch (_error) {
+        setHistoric([]);
+      }
     };
 
-    fetchHistoric();
+    getHistoric();
   }, []);
 
   return (
-    <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-      <div className="flex items-center">
-        <a className="flex" href='/'>
-          <img src={brandDark} alt="brand" className="h-10 w-10 object-contain" />
-          <Typography variant="h5" color="blue-gray" className="ml-2">
-            CoGuide
-          </Typography>
-        </a>
+    <aside className="panel flex h-[calc(100vh-2rem)] flex-col p-5">
+      <div className="mb-6 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3">
+          <img src={brand} alt="CoGuide" className="h-10 w-10 rounded-xl border p-1" style={{ borderColor: 'var(--line)', backgroundColor: 'var(--surface)' }} />
+          <div>
+            <p className="text-sm font-bold">CoGuide</p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Suporte técnico eSocial</p>
+          </div>
+        </Link>
+        <ThemeToggle />
       </div>
 
-      <List>
-        <ListItem>
-          <ListItemPrefix>
-            <PlusCircleIcon className="h-8 w-8" />
-          </ListItemPrefix>
-          <span className="text-blue-gray-900 ml-2">New Chat</span>
-        </ListItem>
-        <Typography variant="h5" color="blue-gray" className="mt-4">
-          Recente
-        </Typography>
-        {historic.map((chat) => (
-          <ListItem key={chat.id} className="mt-2">
-            <span className="text-blue-gray-900">{chat.name}</span>
-          </ListItem>
-        ))}
-      </List>
-    </Card>
+      <button type="button" className="btn-primary mb-5 w-full justify-center">
+        <PlusCircleIcon className="h-5 w-5" />
+        Novo atendimento
+      </button>
+
+      <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em]" style={{ color: 'var(--text-muted)' }}>
+        <ClockIcon className="h-4 w-4" />
+        Conversas recentes
+      </div>
+
+      <div className="flex-1 space-y-2 overflow-y-auto pr-1">
+        {historic.length > 0 ? (
+          historic.map((chat) => (
+            <button
+              key={chat.id}
+              type="button"
+              className="w-full rounded-xl border p-3 text-left text-sm font-medium transition hover:opacity-90"
+              style={{ borderColor: 'var(--line)', backgroundColor: 'var(--surface)' }}
+            >
+              {chat.name}
+            </button>
+          ))
+        ) : (
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+            Nenhum histórico encontrado.
+          </p>
+        )}
+      </div>
+    </aside>
   );
 }
