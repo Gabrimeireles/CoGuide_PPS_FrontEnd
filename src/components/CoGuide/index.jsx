@@ -1,104 +1,76 @@
-import React from "react";
-import { Typography, Card, Button } from "@material-tailwind/react";
+﻿import { Link } from 'react-router-dom';
+
+const features = [
+  {
+    title: 'Copiloto especializado em eSocial',
+    description: 'Respostas assistidas para cenários como rejeição de eventos, inconsistência de rubricas e dúvidas de fechamento da folha.',
+  },
+  {
+    title: 'RAG com base documental rastreável',
+    description: 'O contexto é recuperado por pipeline RAG e pode evoluir para citações estruturadas por trecho e fonte na experiência de atendimento.',
+  },
+  {
+    title: 'Handoff técnico com resumo acionável',
+    description: 'Cada conversa gera síntese objetiva com próximos passos, facilitando escalonamento para níveis mais técnicos quando necessário.',
+  },
+  {
+    title: 'Observabilidade de IA na operação',
+    description: 'Telemetria de retrieval e completion para acompanhar latência, qualidade de resposta e evolução contínua do serviço.',
+  },
+];
+
+const benefits = [
+  'Mais velocidade na resolução de chamados eSocial',
+  'Maior padronização de respostas entre analistas',
+  'Menos retrabalho por orientação técnica inconsistente',
+  'Base pronta para escala com governança e segurança',
+];
 
 export function CoGuide() {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <div className="mb-10 text-center mt-5">
-                <Typography variant="h1" className="font-bold text-blue-gray-900 mb-4">
-                    CoGuide: Ferramenta AI LLM para Atendentes de Suporte
-                </Typography>
-                <Typography variant="h4" className="font-bold text-blue-gray-900">
-                    A CoGuide é sua parceira definitiva em atendimento ao cliente. Nossa plataforma
-                    avançada oferece suporte excepcional, capacitando sua equipe de analistas de
-                    suporte a fornecer assistência de forma mais rápida e eficaz. Com a CoGuide,
-                    você eleva o padrão do atendimento da sua empresa, garantindo satisfação
-                    do cliente em todos os momentos.
-                </Typography>
-            </div>
-            <div className="w-full max-w-screen-lg mb-10">
-                <Card className="bg-white p-8 shadow-md">
-                    <Typography variant="h1" className="mb-8 text-center text-black">
-                        O que a CoGuide faz?
-                    </Typography>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="flex flex-col items-center">
-                            <Typography variant="h5" className="mb-2">
-                                Responde perguntas instantaneamente
-                            </Typography>
-                            <Typography variant="h3" className="text-gray-500 text-center">
-                                A CoGuide fornece respostas precisas e contextualizadas em tempo real.
-                            </Typography>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <Typography variant="h5" className="mb-2">
-                                Sugere soluções personalizadas
-                            </Typography>
-                            <Typography variant="h3" className="text-gray-500 text-center">
-                                A CoGuide identifica a melhor solução para cada problema do cliente.
-                            </Typography>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <Typography variant="h5" className="mb-2">
-                                Automatiza tarefas repetitivas
-                            </Typography>
-                            <Typography variant="h3" className="text-gray-500 text-center">
-                                A CoGuide libera tempo para os atendentes se concentrarem em tarefas mais complexas.
-                            </Typography>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <Typography variant="h5" className="mb-2">
-                                Gera relatórios detalhados
-                            </Typography>
-                            <Typography variant="h3" className="text-gray-500 text-center">
-                                A CoGuide fornece insights valiosos sobre a performance do atendimento.
-                            </Typography>
-                        </div>
-                    </div>
-                </Card>
-            </div>
-            <div className="w-full max-w-screen-lg">
-                <Card className="bg-white p-8 shadow-md">
-                    <Typography variant="h1" className="mb-8 text-center text-black">
-                        Benefícios da CoGuide
-                    </Typography>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <Card className="bg-gray-100 p-4">
-                            <Typography variant="h5" className="mb-2">
-                                Aumento da satisfação do cliente
-                            </Typography>
-                            <Typography variant="body-2" className="mt-4">
-                                Com respostas instantâneas e precisas, a CoGuide garante uma experiência de atendimento impecável.
-                            </Typography>
-                        </Card>
-                        <Card className="bg-gray-100 p-4">
-                            <Typography variant="h5" className="mb-2">
-                                Redução de custos de operação
-                            </Typography>
-                            <Typography variant="body-2" className="mt-4">
-                                A CoGuide automatiza tarefas, liberando tempo da equipe e reduzindo custos com mão de obra.
-                            </Typography>
-                        </Card>
-                        <Card className="bg-gray-100 p-4">
-                            <Typography variant="h5" className="mb-2">
-                                Insights valiosos sobre clientes
-                            </Typography>
-                            <Typography variant="body-2" className="mt-4">
-                                A CoGuide gera relatórios que ajudam a entender as necessidades e expectativas dos clientes.
-                            </Typography>
-                        </Card>
-                    </div>
-                    <div className="flex justify-center mt-8">
-                        <a href="/chat">
-                        <Button variant="gradient" size="lg" className="w-full md:w-auto" ripple="light">
-                            Experimente a CoGuide
-                        </Button>
-                        </a>
-                    </div>
-                </Card>
-            </div>
+  return (
+    <section className="space-y-6">
+      <div className="panel p-8 md:p-10">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--text-muted)' }}>
+          Plataforma
+        </p>
+        <h1 className="section-title mt-2">CoGuide para suporte técnico em eSocial</h1>
+        <p className="section-subtitle mt-4 max-w-3xl">
+          Da triagem ao fechamento do chamado, a CoGuide apoia seu time com inteligência contextual, fluxo guiado e visão operacional para elevar qualidade e previsibilidade no atendimento.
+        </p>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        {features.map((item) => (
+          <article key={item.title} className="panel p-6">
+            <h2 className="text-xl font-bold">{item.title}</h2>
+            <p className="mt-3 text-sm leading-7" style={{ color: 'var(--text-muted)' }}>
+              {item.description}
+            </p>
+          </article>
+        ))}
+      </div>
+
+      <div className="panel p-8 md:p-10">
+        <h2 className="text-2xl font-bold">Benefícios para o negócio</h2>
+        <ul className="mt-4 grid gap-3 md:grid-cols-2">
+          {benefits.map((item) => (
+            <li key={item} className="rounded-xl border p-4 text-sm font-medium" style={{ borderColor: 'var(--line)', backgroundColor: 'var(--surface)' }}>
+              {item}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/chat" className="btn-primary">
+            Experimentar copiloto
+          </Link>
+          <Link to="/contact" className="btn-secondary">
+            Falar com especialista
+          </Link>
         </div>
-    );
-};
+      </div>
+    </section>
+  );
+}
 
 export default CoGuide;
