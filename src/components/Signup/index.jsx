@@ -1,8 +1,9 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import brand from '/src/assets/brand.png';
 import { ThemeToggle } from '/src/components/ThemeToggle';
+import { authSignup } from '/src/lib/api';
 
 export function Signup() {
   const [name, setName] = useState('');
@@ -23,17 +24,7 @@ export function Signup() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Não foi possível criar a conta.');
-      }
+      await authSignup({ name, email, password });
 
       Swal.fire({
         icon: 'success',

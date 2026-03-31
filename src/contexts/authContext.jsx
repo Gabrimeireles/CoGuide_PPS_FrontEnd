@@ -1,59 +1,58 @@
-/* eslint-disable react/prop-types, react-refresh/only-export-components */
+﻿/* eslint-disable react/prop-types, react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { authLogin, authMe } from '/src/lib/api';
 
 const AuthContext = createContext();
 
+const TOKEN_STORAGE_KEY = 'token';
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [token, setToken] = useState(localStorage.getItem(TOKEN_STORAGE_KEY) || null);
+  const [authLoading, setAuthLoading] = useState(Boolean(localStorage.getItem(TOKEN_STORAGE_KEY)));
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    setToken(null);
+    setUser(null);
+    setAuthLoading(false);
+  }, []);
 
   const fetchUser = useCallback(async () => {
+    if (!token) {
+      setUser(null);
+      setAuthLoading(false);
+      return;
+    }
+
+    setAuthLoading(true);
+
     try {
-      const response = await fetch('http://localhost:3000/auth/user', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await authMe(token);
       setUser(data);
     } catch (_error) {
-      setUser(null);
+      logout();
+    } finally {
+      setAuthLoading(false);
     }
-  }, [token]);
+  }, [logout, token]);
 
   useEffect(() => {
-    if (token) {
-      fetchUser();
-    }
-  }, [fetchUser, token]);
+    fetchUser();
+  }, [fetchUser]);
 
   const login = async (email, password) => {
-    const response = await fetch('http://localhost:3000/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+    const data = await authLogin({ email, password });
 
-    const data = await response.json();
-
-    if (!response.ok || !data.token) {
-      throw new Error(data.error || 'Falha de autenticação');
+    if (!data?.token) {
+      throw new Error('Falha de autenticação');
     }
 
-    localStorage.setItem('token', data.token);
+    localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
     setToken(data.token);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
-    setUser(null);
-  };
-
-  return <AuthContext.Provider value={{ user, token, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, token, authLoading, login, logout }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

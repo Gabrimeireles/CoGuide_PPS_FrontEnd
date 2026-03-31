@@ -1,16 +1,14 @@
-
-import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './contexts/authContext';
+﻿import { BrowserRouter as Router, Outlet, Route, Routes } from 'react-router-dom';
 import { About } from './components/About';
-import { Chat } from './components/Chat';
+import { ChatWorkspace } from './components/ChatWorkspace';
 import { CoGuide } from './components/CoGuide';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Home } from './components/Home';
-import { Sidebar } from './components/Sidebar';
 import { Signin } from './components/Signin';
 import { Signup } from './components/Signup';
+import { AuthProvider } from './contexts/authContext';
 
 function MarketingLayout() {
   return (
@@ -32,15 +30,6 @@ function AuthLayout() {
   );
 }
 
-function ChatLayout() {
-  return (
-    <div className="chat-shell">
-      <Sidebar />
-      <Chat />
-    </div>
-  );
-}
-
 function App() {
   return (
     <AuthProvider>
@@ -58,7 +47,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
           </Route>
 
-          <Route path="/chat" element={<ChatLayout />} />
+          <Route path="/chat" element={<ChatWorkspace />} />
         </Routes>
       </Router>
     </AuthProvider>
