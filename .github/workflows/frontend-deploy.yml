@@ -4,11 +4,11 @@ on:
   workflow_run:
     workflows: ["Frontend - Create Release"]
     types: [completed]
-    branches: [homologation]
+    branches: [master, homologation]
   workflow_dispatch:
     inputs:
       image_tag:
-        description: v0.1.0
+        description: vX.Y.Z
         required: true
       skip_health_check:
         description: Skip health check
@@ -16,14 +16,56 @@ on:
         type: boolean
         default: false
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: frontend-deploy-homologation
   cancel-in-progress: false
 
 jobs:
+  resolve_image_tag:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.resolve.outputs.image_tag }}
+    steps:
+      - name: Checkout release commit
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Node.js
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Resolve image tag
+        id: resolve
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            RAW_TAG='${{ github.event.inputs.image_tag }}'
+            # Normalize common typo: v.0.1.1 -> v0.1.1
+            if [[ "$RAW_TAG" =~ ^v\.[0-9] ]]; then
+              RAW_TAG="v${RAW_TAG#v.}"
+            fi
+            # Accept "0.1.1" and normalize to "v0.1.1"
+            if [[ "$RAW_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              RAW_TAG="v$RAW_TAG"
+            fi
+            TAG="$RAW_TAG"
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            TAG="v$VERSION"
+          fi
+
+          echo "image_tag=$TAG" >> "$GITHUB_OUTPUT"
+
   deploy:
+    needs: resolve_image_tag
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     uses: Gabrimeireles/reusable-workflows/.github/workflows/docker-deploy-ssh.yml@v1.7
     with:
@@ -34,7 +76,7 @@ jobs:
       compose_env_file: .env
       runtime_env_filename: .env.frontend
       api_image: ghcr.io/gabrimeireles/coguide-frontend
-      api_tag: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.event.inputs.image_tag }}
+      api_tag: ${{ needs.resolve_image_tag.outputs.image_tag }}
       health_url: ${{ vars.FRONTEND_HEALTH_URL }}
       health_retries: 10
       health_interval: 30
