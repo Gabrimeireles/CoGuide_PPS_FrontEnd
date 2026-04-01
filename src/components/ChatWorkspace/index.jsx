@@ -19,11 +19,12 @@ function sortByLatest(chats) {
 
 export function ChatWorkspace() {
   const navigate = useNavigate();
-  const { token, authLoading } = useAuth();
+  const { token, authLoading, requestWithAuth } = useAuth();
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState('');
+  const [isNewChatDraft, setIsNewChatDraft] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !token) {
@@ -42,12 +43,16 @@ export function ChatWorkspace() {
     setHistoryError('');
 
     try {
-      const response = await getUserChats(token);
+      const response = await requestWithAuth((accessToken) => getUserChats(accessToken));
       const nextChats = sortByLatest(Array.isArray(response) ? response : []);
       setChats(nextChats);
 
       if (!nextChats.length) {
         setActiveChatId(null);
+        return;
+      }
+
+      if (isNewChatDraft) {
         return;
       }
 
@@ -61,7 +66,15 @@ export function ChatWorkspace() {
     } finally {
       setHistoryLoading(false);
     }
-  }, [activeChatId, token]);
+  }, [activeChatId, isNewChatDraft, requestWithAuth, token]);
+
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    refreshChats();
+  }, [refreshChats, token]);
 
   const handleChatUpdated = useCallback((updatedChat) => {
     const updatedId = getChatId(updatedChat);
@@ -70,11 +83,22 @@ export function ChatWorkspace() {
       return;
     }
 
+    setIsNewChatDraft(false);
     setChats((currentChats) => {
       const filtered = currentChats.filter((chat) => getChatId(chat) !== updatedId);
       return sortByLatest([updatedChat, ...filtered]);
     });
     setActiveChatId(updatedId);
+  }, []);
+
+  const handleCreateChat = useCallback(() => {
+    setIsNewChatDraft(true);
+    setActiveChatId(null);
+  }, []);
+
+  const handleSelectChat = useCallback((chatId) => {
+    setIsNewChatDraft(false);
+    setActiveChatId(chatId);
   }, []);
 
   const activeChat = useMemo(
@@ -89,8 +113,8 @@ export function ChatWorkspace() {
         activeChatId={activeChatId}
         isLoading={historyLoading}
         errorMessage={historyError}
-        onSelectChat={setActiveChatId}
-        onCreateChat={() => setActiveChatId(null)}
+        onSelectChat={handleSelectChat}
+        onCreateChat={handleCreateChat}
         onRefreshChats={refreshChats}
       />
       <Chat activeChat={activeChat} onChatUpdated={handleChatUpdated} />
