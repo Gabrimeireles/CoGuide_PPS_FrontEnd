@@ -1,5 +1,4 @@
 ﻿/* eslint-disable react/prop-types */
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowPathIcon, ClockIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import brand from '/src/assets/brand.png';
@@ -18,10 +17,6 @@ export function Sidebar({
   onCreateChat,
   onRefreshChats,
 }) {
-  useEffect(() => {
-    onRefreshChats();
-  }, [onRefreshChats]);
-
   return (
     <aside className="panel flex h-[calc(100vh-2rem)] flex-col p-5">
       <div className="mb-6 flex items-center justify-between">
