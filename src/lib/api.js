@@ -13,7 +13,10 @@ async function parseResponse(response) {
       (typeof payload === 'string' && payload) ||
       `HTTP ${response.status}`;
 
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+    error.payload = payload;
+    throw error;
   }
 
   return payload;
@@ -59,8 +62,22 @@ export function authLogin(payload) {
   });
 }
 
+export function authRefresh(payload) {
+  return apiRequest('/auth/refresh', {
+    method: 'POST',
+    body: payload,
+  });
+}
+
 export function authMe(token) {
   return apiRequest('/auth/user', { token });
+}
+
+export function authLogout(token) {
+  return apiRequest('/auth/logout', {
+    method: 'POST',
+    token,
+  });
 }
 
 export function getUserChats(token) {

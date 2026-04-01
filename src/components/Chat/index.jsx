@@ -17,7 +17,7 @@ function mapMessageAuthor(role) {
 }
 
 export function Chat({ activeChat, onChatUpdated }) {
-  const { token } = useAuth();
+  const { token, requestWithAuth } = useAuth();
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -42,7 +42,9 @@ export function Chat({ activeChat, onChatUpdated }) {
 
     try {
       const chatId = activeChat?.id || activeChat?._id || null;
-      const updatedChat = await sendChatPrompt(token, content, chatId);
+      const updatedChat = await requestWithAuth((accessToken) =>
+        sendChatPrompt(accessToken, content, chatId),
+      );
       onChatUpdated(updatedChat);
       setMessageText('');
     } catch (error) {

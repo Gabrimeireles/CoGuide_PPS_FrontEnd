@@ -19,7 +19,7 @@ function sortByLatest(chats) {
 
 export function ChatWorkspace() {
   const navigate = useNavigate();
-  const { token, authLoading } = useAuth();
+  const { token, authLoading, requestWithAuth } = useAuth();
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -42,7 +42,7 @@ export function ChatWorkspace() {
     setHistoryError('');
 
     try {
-      const response = await getUserChats(token);
+      const response = await requestWithAuth((accessToken) => getUserChats(accessToken));
       const nextChats = sortByLatest(Array.isArray(response) ? response : []);
       setChats(nextChats);
 
@@ -61,7 +61,7 @@ export function ChatWorkspace() {
     } finally {
       setHistoryLoading(false);
     }
-  }, [activeChatId, token]);
+  }, [activeChatId, requestWithAuth, token]);
 
   const handleChatUpdated = useCallback((updatedChat) => {
     const updatedId = getChatId(updatedChat);
